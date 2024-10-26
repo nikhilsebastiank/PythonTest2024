@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[39]:
+# In[1]:
 
 
 get_ipython().system('pip freeze > requirements.txt')
 
 
-# In[40]:
+# In[2]:
 
 
 ## Packages:
@@ -23,8 +23,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 # Set input and output paths: 
-data_path = '~/Dropbox/Projects/WorldBank-Trade/PythonRStataTest2024/PythonTest/python-test/data'
-out_path = '~/Dropbox/Projects/WorldBank-Trade/PythonRStataTest2024/PythonTest/python-test/output'
+data_path = '~/Dropbox/Projects/WorldBank-Trade/PythonRStataTest2024/PythonTest/data'
+out_path = '~/Dropbox/Projects/WorldBank-Trade/PythonRStataTest2024/PythonTest/output'
 
 # Read the dataset and sort by country and company names:
 foreign_names = pd.read_csv(data_path + '/ForeignNames_2019_2020.csv', )
@@ -34,13 +34,13 @@ iso_codes = pd.read_csv(data_path + '/Country_Name_ISO3.csv')
 merged_df = pd.merge(foreign_names, iso_codes, left_on='foreigncountry_cleaned', right_on='country_name', how='left')
 
 
-# In[41]:
+# In[3]:
 
 
 merged_df
 
 
-# In[42]:
+# In[4]:
 
 
 ## Logic for the cleaning algorithm that creates the unique ids:
@@ -52,7 +52,7 @@ merged_df
 #6. Assign unique ids:
 
 
-# In[43]:
+# In[5]:
 
 
 # Functions:
@@ -105,21 +105,21 @@ def comp_similar2(df):
     return df
 
 
-# In[44]:
+# In[6]:
 
 
 # Split data into training and test data:
 train_data, test_data = train_test_split(merged_df, test_size=0.3, random_state = 40)
 
 
-# In[45]:
+# In[7]:
 
 
 # Apply the initial cleaning algorithm to the test data:
 train_data = comp_similar2(train_data)
 
 
-# In[46]:
+# In[8]:
 
 
 ## Random Forest Classifier: Unfortunately, my computer runs out of memory when I run the following block, 
@@ -151,14 +151,14 @@ train_data = comp_similar2(train_data)
 #accuracy, classification_rep
 
 
-# In[47]:
+# In[9]:
 
 
 # Output files in part1:
 cleaned = comp_similar2(merged_df)
 
 
-# In[48]:
+# In[10]:
 
 
 # Output 1
@@ -167,11 +167,40 @@ cleaned_subset = cleaned[columns_to_keep]
 cleaned_subset.to_csv(out_path + '/output_nikhil_1.csv')
 
 
-# In[49]:
+# In[11]:
 
 
 # Output1 Changed Names:
 cleaned_changed = cleaned[cleaned['change']=='yes'] ## Only firms whos names have been changed, needs further checking
 cleaned_changed = cleaned_changed[['foreign', 'cleaned_name', 'cleaned_ID']]
 cleaned_changed.to_csv(out_path + '/output_nikhil_1_changed.csv')
+
+
+# In[12]:
+
+
+## Part 2:
+foreign_names_2021 = pd.read_csv(data_path + '/ForeignNames_2021.csv', )
+
+
+# In[13]:
+
+
+# Join the two data frames:
+merged_df2 = pd.merge(cleaned, foreign_names_2021, on = ['foreign', 'foreigncountry_cleaned', 'shpmtyear'], how='outer')
+
+
+# In[14]:
+
+
+merged_df2
+cleaned2 = comp_similar2(merged_df2)
+
+
+# In[15]:
+
+
+cleaned2
+cleaned_subset2 = cleaned2[columns_to_keep]
+cleaned_subset2.to_csv(out_path + "/output_nikhil_2.csv")
 
